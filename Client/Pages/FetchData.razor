@@ -1,0 +1,53 @@
+﻿@page "/fetchdata"
+@using BlazorApp.Shared 
+@inject HttpClient Http
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Number</th>
+                <th>DetailedForecast</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts.properties.periods)
+            {
+                <tr>
+                    <td>@forecast.name</td>
+                    <td>@forecast.number</td>
+                    <td>@forecast.detailedForecast</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Root forecasts = new Root { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            forecasts = await Http.GetFromJsonAsync<Root>("https://api.weather.gov/zones/public/ORZ006/forecast") ?? new Root { };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+
+}
